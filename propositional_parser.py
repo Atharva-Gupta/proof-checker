@@ -49,11 +49,11 @@ class TwoSided(Sentence):
         return "(" + self.left.__str__() + " " + self.oper.value + " " + self.right.__str__() + ")"
 
     def evaluate(self, variable_assignment):
-        if self.symbol == Operator.AND:
+        if self.oper == Operator.AND:
             return self.left.evaluate(variable_assignment) and self.right.evaluate(variable_assignment)
-        if self.symbol == Operator.OR:
+        if self.oper == Operator.OR:
             return self.left.evaluate(variable_assignment) or self.right.evaluate(variable_assignment)
-        if self.symbol == Operator.IMPLIES:
+        if self.oper == Operator.IMPLIES:
             return (not self.left.evaluate(variable_assignment)) or self.right.evaluate(variable_assignment)
         else:
             raise NotImplementedError()
@@ -70,7 +70,7 @@ def parse_string(s):
         return Atomic(s[0])
 
     if s[0] == "\\":
-        if s[:4] != "\\not":
+        if s[:4] != r"\not":
             raise ParseError("Only not operand is unary!")
 
         return Negation(parse_string(s[4:]))
@@ -98,12 +98,19 @@ def parse_string(s):
 
     split[1] = split[1].strip()
 
-    str_to_oper = {"\\or": Operator.OR, "\\and": Operator.AND, "\\implies": Operator.IMPLIES}
+    str_to_oper = {r"\or": Operator.OR, r"\and": Operator.AND, r"\implies": Operator.IMPLIES}
 
     return TwoSided(parse_string(split[0]), parse_string(split[2]), str_to_oper[split[1]])
 
 def main():
-    print(parse_string("((\\not B) \implies B)"))
+    s = r"((B) \implies B)"
+    print(parse_string(r"((\not B) \implies B)"))
+    # print(parse_string(r"((\and B) \or B)"))
+    # print(parse_string(r"((\and B) \implies B)"))
+
+    variable_assgn = {"B": False}
+
+    print(parse_string(s).evaluate(variable_assgn))
 
 if __name__ == "__main__":
     main()
