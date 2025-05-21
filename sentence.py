@@ -14,6 +14,9 @@ class Sentence(ABC):
     def __str__(self):
         raise NotImplementedError()
 
+    def __eq__(self, value):
+        raise NotImplementedError()
+
 class Operator(Enum):
     OR = "OR"
     AND = "AND"
@@ -36,6 +39,11 @@ class Atomic(Sentence):
         s.add(self.name)
         return s
 
+    def __eq__(self, value):
+        if not isinstance(value, Atomic):
+            return False
+        return self.name == value.name
+
     def __str__(self):
         return self.name
 
@@ -50,6 +58,11 @@ class Negation(Sentence):
 
     def get_atomics(self) -> Iterable:
         return self.inner.get_atomics()
+
+    def __eq__(self, value):
+        if not isinstance(value, Negation):
+            return False
+        return self.inner.__eq__(value.inner)
 
     def __str__(self):
         return f"({Operator.NOT.value} {self.inner})"
@@ -76,6 +89,15 @@ class TwoSided(Sentence):
             return (not self.left.evaluate(variable_assignment)) or self.right.evaluate(variable_assignment)
         else:
             raise NotImplementedError()
+
+    def __eq__(self, value):
+        if not isinstance(value, TwoSided):
+            return False
+
+        if self.oper != value.oper:
+            return False
+
+        return self.left.__eq__(value.left) and self.right.__eq__(value.right)
 
     def __str__(self):
         return "(" + self.left.__str__() + " " + self.oper.value + " " + self.right.__str__() + ")"
