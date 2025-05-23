@@ -47,6 +47,29 @@ class Atomic(Sentence):
     def __str__(self):
         return self.name
 
+
+class True_Sym(Atomic):
+    def __init__(self):
+        super().__init__("TRUE")
+
+    def evaluate(self, variable_assignment):
+        return True
+
+    def __eq__(self, value):
+        return isinstance(value, True_Sym)
+
+
+class False_Sym(Atomic):
+    def __init__(self):
+        super().__init__("FALSE")
+
+    def evaluate(self, variable_assignment):
+        return False
+
+    def __eq__(self, value):
+        return isinstance(value, False_Sym)
+
+
 class Negation(Sentence):
     inner: Sentence
     def __init__(self, inner):

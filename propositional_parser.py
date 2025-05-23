@@ -1,5 +1,5 @@
 from errors import ParseError
-from sentence import Atomic,  Negation, TwoSided, Operator
+from sentence import Atomic,  Negation, TwoSided, Operator, True_Sym, False_Sym
 
 def parse_string(s):
     s = s.strip()
@@ -13,6 +13,11 @@ def parse_string(s):
         return Atomic(s[0])
 
     if s[0] == "\\":
+        if s[:5] == r"\true":
+            return True_Sym()
+        elif s[:6] == r"\false":
+            return False_Sym()
+
         if s[:4] != r"\not":
             raise ParseError("Only not operand is unary!")
 
@@ -46,6 +51,9 @@ def parse_string(s):
     return TwoSided(parse_string(split[0]), parse_string(split[2]), str_to_oper[split[1]])
 
 def main():
+    s = r"\false"
+    print(parse_string(s))
+
     s = r"((B) \implies A)"
     print(parse_string(r"((\not B) \implies B)"))
 
