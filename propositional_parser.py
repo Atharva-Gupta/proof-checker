@@ -3,9 +3,6 @@ from sentence import Atomic,  Negation, TwoSided, Operator, True_Sym, False_Sym
 
 def parse_string(s):
     s = s.strip()
-    if s[0] == "(":
-        if s[-1] == ")":
-            s = s[1:-1]
 
     if len(s) == 1 and s[0] not in "\(":
         return Atomic(s[0])

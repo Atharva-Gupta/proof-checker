@@ -39,7 +39,7 @@ class Proof:
             return False
 
         for i in range(len(gamma1)):
-            if gamma1[i] != gamma2[i]:
+            if gamma1[i] not in gamma2:
                 return False
 
         return True
@@ -150,48 +150,3 @@ class Proof:
             raise ValueError(f"Rule of inference {potential.rule} not supported!")
 
         return False
-
-
-def main():
-    g1 = parse_string(r"A \or B")
-    g2 = parse_string(r"A \implies C")
-    g3 = parse_string(r"B \implies C")
-    gamma = [g1, g2, g3]
-
-    as1 = parse_string(r"A")
-    as2 = parse_string(r"B")
-
-    c = parse_string(r"C")
-
-    pr = Proof()
-    print(pr.add_sequent(Sequent(gamma, g1, InferenceRule.axiom)))
-    print(pr.add_sequent(Sequent(gamma, g2, InferenceRule.axiom)))
-    print(pr.add_sequent(Sequent(gamma, g3, InferenceRule.axiom)))
-    print(pr.add_sequent(Sequent(gamma + [as1], as1, InferenceRule.axiom)))
-    print(pr.add_sequent(Sequent(gamma + [as1], g2, InferenceRule.axiom)))
-    print(pr.add_sequent(Sequent(gamma + [as1], c, InferenceRule.implies_elim)))
-
-    print(pr.add_sequent(Sequent(gamma + [as2], as2, InferenceRule.axiom)))
-    print(pr.add_sequent(Sequent(gamma + [as2], g3, InferenceRule.axiom)))
-    print(pr.add_sequent(Sequent(gamma + [as2], c, InferenceRule.implies_elim)))
-
-    print(pr.add_sequent(Sequent(gamma, c, InferenceRule.or_elim)))
-
-    # g1 = parse_string(r"A")
-    # g2 = parse_string(r"B \implies (\not A)")
-    # g3 = parse_string(r"B")
-
-    # c = parse_string(r"\not A")
-    # d = parse_string(r"\false")
-
-    # gamma = [g1, g2, g3]
-    # pr = Proof()
-    # print(pr.add_sequent(Sequent(gamma, g1, InferenceRule.axiom)))
-    # print(pr.add_sequent(Sequent(gamma, g2, InferenceRule.axiom)))
-    # print(pr.add_sequent(Sequent(gamma, g3, InferenceRule.axiom)))
-    # print(pr.add_sequent(Sequent(gamma, c, InferenceRule.implies_elim)))
-    # print(pr.add_sequent(Sequent(gamma, d, InferenceRule.not_elim)))
-
-
-if __name__ == "__main__":
-    main()
