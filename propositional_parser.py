@@ -6,8 +6,6 @@ def parse_string(s):
     if s[0] == "(":
         if s[-1] == ")":
             s = s[1:-1]
-        else:
-            raise ParseError("Last character must be a closing parentheses!")
 
     if len(s) == 1 and s[0] not in "\(":
         return Atomic(s[0])
@@ -34,6 +32,9 @@ def parse_string(s):
         elif char == ")":
             count -= 1
 
+        if count < 0:
+            raise ParseError("Every closing parenthesis must have a corresponding opening parenthesis!")
+
         if count == 0 and char == "\\":
             split.append("")
 
@@ -43,6 +44,9 @@ def parse_string(s):
         split[-1] += char
 
         ind += 1
+
+    if count > 0:
+        raise ParseError("Every opening parenthesis must have a corresponding closed parenthesis!")
 
     split[1] = split[1].strip()
 
