@@ -29,6 +29,17 @@ class Sequent:
         self.conclusion = conclusion
         self.rule = rule
 
+    def __str__(self):
+        s = "["
+        for sent in self.gamma[:-1]:
+            s += sent.__str__() + ", "
+        s += self.gamma[-1].__str__()
+        s += "] proves "
+        s += self.conclusion.__str__()
+        s += f" :{self.rule.value}"
+        return s
+
+
 class Proof:
     sequents: List[Sequent]
     def __init__(self):
@@ -117,9 +128,10 @@ class Proof:
             return False
 
         elif potential.rule == InferenceRule.not_intro:
-            assert isinstance(potential.conclusion, Negation) and potential.conclusion.oper == Operator.NOT
+            assert isinstance(potential.conclusion, Negation)
             gamma_prime = potential.gamma + [potential.conclusion.inner]
-            if self.proof_exists(gamma_prime, False_Sym):
+
+            if self.proof_exists(gamma_prime, False_Sym()):
                 return True
             return False
 
@@ -135,7 +147,6 @@ class Proof:
             return True
 
         elif potential.rule == InferenceRule.false_elim:
-            assert potential.conclusion == False_Sym()
             if self.proof_exists(potential.gamma, False_Sym()):
                 return True
             return False

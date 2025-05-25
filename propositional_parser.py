@@ -62,22 +62,3 @@ def parse_string(s):
                 stack.append(TwoSided(left, right, oper))
 
     return stack[0]
-
-def main():
-    s = r"\false"
-    print(parse_string(s))
-
-    s = r"((B) \implies A)"
-    print(parse_string(r"((\not B) \implies B)"))
-
-    print(parse_string(r"(\not B) \implies B"))
-
-    # variable_assgn = {"B": True, "A": False}
-
-    # print(parse_string(s).evaluate(variable_assgn))
-    # print(parse_string(s).get_atomics())
-
-    print(parse_string("A"))
-
-if __name__ == "__main__":
-    main()

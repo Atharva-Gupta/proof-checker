@@ -1,5 +1,6 @@
 import pytest
 from proof import Proof, Sequent, InferenceRule
+from sentence import Negation
 from propositional_parser import parse_string
 
 def test_1():
@@ -96,13 +97,13 @@ def test_5():
     gamma_prime = gamma + [as1]
 
     pr = Proof()
-    pr.add_sequent(Sequent(gamma_prime, g1, InferenceRule.axiom))
-    pr.add_sequent(Sequent(gamma_prime, g2, InferenceRule.axiom))
-    pr.add_sequent(Sequent(gamma_prime, as1, InferenceRule.axiom))
-    pr.add_sequent(Sequent(gamma_prime, c1, InferenceRule.implies_elim))
-    pr.add_sequent(Sequent(gamma_prime, c2, InferenceRule.implies_elim))
+    assert pr.add_sequent(Sequent(gamma_prime, g1, InferenceRule.axiom))
+    assert pr.add_sequent(Sequent(gamma_prime, g2, InferenceRule.axiom))
+    assert pr.add_sequent(Sequent(gamma_prime, as1, InferenceRule.axiom))
+    assert pr.add_sequent(Sequent(gamma_prime, c1, InferenceRule.implies_elim))
+    assert pr.add_sequent(Sequent(gamma_prime, c2, InferenceRule.implies_elim))
 
-    pr.add_sequent(Sequent(gamma, c3, InferenceRule.implies_intro))
+    assert pr.add_sequent(Sequent(gamma, c3, InferenceRule.implies_intro))
 
 def test_6():
     g1 = parse_string(r"A")
@@ -162,3 +163,58 @@ def test_7():
     assert pr.add_sequent(Sequent(gamma_two, c9, InferenceRule.or_intro))
 
     assert pr.add_sequent(Sequent(gamma, c, InferenceRule.or_elim))
+
+def test_8():
+    g1 = parse_string(r"J \or L")
+    g2 = parse_string(r"\not L")
+
+    as1 = parse_string(r"J")
+    as2 = parse_string(r"L")
+
+    c1 = parse_string(r"\false")
+
+    gamma = [g1, g2]
+
+    gamma_one = gamma + [as1]
+    gamma_two = gamma + [as2]
+
+    pr = Proof()
+    assert pr.add_sequent(Sequent(gamma, g1, InferenceRule.axiom))
+
+    assert pr.add_sequent(Sequent(gamma_one, as1, InferenceRule.axiom))
+
+    assert pr.add_sequent(Sequent(gamma_two, g2, InferenceRule.axiom))
+    assert pr.add_sequent(Sequent(gamma_two, as2, InferenceRule.axiom))
+    assert pr.add_sequent(Sequent(gamma_two, c1, InferenceRule.not_elim))
+    assert pr.add_sequent(Sequent(gamma_two, as1, InferenceRule.false_elim))
+
+    assert pr.add_sequent(Sequent(gamma, as1, InferenceRule.or_elim))
+
+def test_9():
+    as1 = parse_string(r"\not (A \or (\not A))")
+    as2 = parse_string(r"A")
+
+    c1 = parse_string(r"A \or (\not A)")
+    c2 = parse_string(r"\false")
+
+    c3 = parse_string(r"\not A")
+    c4 = parse_string(r"A \or (\not A)")
+    c5 = parse_string(r"\false")
+
+    c6 = parse_string(r"A \or (\not A)")
+
+    gamma = []
+    gamma_one = gamma + [as1]
+    gamma_two = gamma_one + [as2]
+
+    pr = Proof()
+    assert pr.add_sequent(Sequent(gamma_two, as1, InferenceRule.axiom))
+    assert pr.add_sequent(Sequent(gamma_two, as2, InferenceRule.axiom))
+    assert pr.add_sequent(Sequent(gamma_two, c1, InferenceRule.or_intro))
+    assert pr.add_sequent(Sequent(gamma_two, c2, InferenceRule.not_elim))
+
+    assert pr.add_sequent(Sequent(gamma_one, c3, InferenceRule.not_intro))
+    assert pr.add_sequent(Sequent(gamma_one, c4, InferenceRule.or_intro))
+    assert pr.add_sequent(Sequent(gamma_one, as1, InferenceRule.axiom))
+    assert pr.add_sequent(Sequent(gamma_one, c5, InferenceRule.not_elim))
+    assert pr.add_sequent(Sequent(gamma, c6, InferenceRule.contra))
