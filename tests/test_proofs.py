@@ -125,16 +125,19 @@ def test_6():
 def test_7():
     g1 = parse_string(r"A \and (B \or C)")
 
-    c1 = parse_string(r"A")
-    c2 = parse_string(r"B \or C")
+    c1 = parse_string(r"B \or C")
 
     as1 = parse_string(r"B")
-    c3 = parse_string(r"A \and B")
-    c4 = parse_string(r"(A \and B) \or (A \and C)")
+    c2 = parse_string(r"A \and (B \or C)")
+    c3 = parse_string(r"A")
+    c4 = parse_string(r"(A \and B)")
+    c5 = parse_string(r"(A \and B) \or (A \and C)")
 
     as2 = parse_string(r"C")
-    c5 = parse_string(r"A \and C")
-    c6 = parse_string(r"(A \and B) \or (A \and C)")
+    c6 = parse_string(r"A \and (B \or C)")
+    c7 = parse_string(r"A")
+    c8 = parse_string(r"A \and C")
+    c9 = parse_string(r"(A \and B) \or (A \and C)")
 
     c = parse_string(r"(A \and B) \or (A \and C)")
 
@@ -144,13 +147,18 @@ def test_7():
 
     pr = Proof()
     assert pr.add_sequent(Sequent(gamma, g1, InferenceRule.axiom))
+    assert pr.add_sequent(Sequent(gamma, c1, InferenceRule.and_elim))
 
     assert pr.add_sequent(Sequent(gamma_one, as1, InferenceRule.axiom))
-    assert pr.add_sequent(Sequent(gamma_one, c3, InferenceRule.and_intro))
-    assert pr.add_sequent(Sequent(gamma_one, c4, InferenceRule.or_intro))
+    assert pr.add_sequent(Sequent(gamma_one, c2, InferenceRule.axiom))
+    assert pr.add_sequent(Sequent(gamma_one, c3, InferenceRule.and_elim))
+    assert pr.add_sequent(Sequent(gamma_one, c4, InferenceRule.and_intro))
+    assert pr.add_sequent(Sequent(gamma_one, c5, InferenceRule.or_intro))
 
     assert pr.add_sequent(Sequent(gamma_two, as2, InferenceRule.axiom))
-    assert pr.add_sequent(Sequent(gamma_two, c5, InferenceRule.and_intro))
-    assert pr.add_sequent(Sequent(gamma_two, c6, InferenceRule.or_intro))
+    assert pr.add_sequent(Sequent(gamma_two, c6, InferenceRule.axiom))
+    assert pr.add_sequent(Sequent(gamma_two, c7, InferenceRule.and_elim))
+    assert pr.add_sequent(Sequent(gamma_two, c8, InferenceRule.and_intro))
+    assert pr.add_sequent(Sequent(gamma_two, c9, InferenceRule.or_intro))
 
     assert pr.add_sequent(Sequent(gamma, c, InferenceRule.or_elim))

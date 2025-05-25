@@ -1,55 +1,67 @@
 from errors import ParseError
 from sentence import Atomic,  Negation, TwoSided, Operator, True_Sym, False_Sym
 
+import re
+
+def insert_spaces(text):
+    return [part for part in re.split(r'(\(|\)|\s+)', text) if part and not re.match(r'^\s+$', part)]
+
 def parse_string(s):
-    s = s.strip()
+    s = "(" + s + ")"
+    s = insert_spaces(s)
 
-    if len(s) == 1 and s[0] not in "\(":
-        return Atomic(s[0])
+    stack = []
+    for char in s:
+        stack.append(char)
 
-    if s[0] == "\\":
-        if s[:5] == r"\true":
-            return True_Sym()
-        elif s[:6] == r"\false":
-            return False_Sym()
+        if char == ")":
+            ns = []
+            while True:
+                x = stack.pop()
+                ns.append(x)
 
-        if s[:4] != r"\not":
-            raise ParseError("Only not operand is unary!")
+                if x == "(":
+                    break
 
-        return Negation(parse_string(s[4:]))
+            ns = ns[::-1]
 
-    count = 0
-    ind = 0
-    split = [""]
-    while ind < len(s):
-        char = s[ind]
+            if len(ns) == 3:
+                if isinstance(ns[1], str):
+                    if ns[1] == r"\true":
+                        stack.append(True_Sym())
+                    elif ns[1] == r"\false":
+                        stack.append(False_Sym())
+                    else:
+                        stack.append(Atomic(ns[1]))
+                else:
+                    stack.append(ns[1])
+            elif len(ns) == 4:
+                assert ns[1] == r"\not"
 
-        if char == "(":
-            count += 1
-        elif char == ")":
-            count -= 1
+                if isinstance(ns[2], str):
+                    inner = Atomic(ns[2])
+                else:
+                    inner = ns[2]
 
-        if count < 0:
-            raise ParseError("Every closing parenthesis must have a corresponding opening parenthesis!")
+                stack.append(Negation(inner))
 
-        if count == 0 and char == "\\":
-            split.append("")
+            elif len(ns) == 5:
+                str_to_oper = {r"\or": Operator.OR, r"\and": Operator.AND, r"\implies": Operator.IMPLIES}
+                oper = str_to_oper[ns[2]]
 
-        if len(split) == 2 and char == " ":
-            split.append("")
+                if isinstance(ns[1], str):
+                    left = Atomic(ns[1])
+                else:
+                    left = ns[1]
 
-        split[-1] += char
+                if isinstance(ns[3], str):
+                    right = Atomic(ns[3])
+                else:
+                    right = ns[3]
 
-        ind += 1
+                stack.append(TwoSided(left, right, oper))
 
-    if count > 0:
-        raise ParseError("Every opening parenthesis must have a corresponding closed parenthesis!")
-
-    split[1] = split[1].strip()
-
-    str_to_oper = {r"\or": Operator.OR, r"\and": Operator.AND, r"\implies": Operator.IMPLIES}
-
-    return TwoSided(parse_string(split[0]), parse_string(split[2]), str_to_oper[split[1]])
+    return stack[0]
 
 def main():
     s = r"\false"
@@ -58,12 +70,14 @@ def main():
     s = r"((B) \implies A)"
     print(parse_string(r"((\not B) \implies B)"))
 
-    variable_assgn = {"B": True, "A": False}
+    print(parse_string(r"(\not B) \implies B"))
 
-    print(parse_string(s).evaluate(variable_assgn))
-    print(parse_string(s).get_atomics())
+    # variable_assgn = {"B": True, "A": False}
 
-    # print(parse_string("A"))
+    # print(parse_string(s).evaluate(variable_assgn))
+    # print(parse_string(s).get_atomics())
+
+    print(parse_string("A"))
 
 if __name__ == "__main__":
     main()
