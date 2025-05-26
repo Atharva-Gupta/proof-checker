@@ -14,6 +14,8 @@ def parse_string(s):
     for char in s:
         stack.append(char)
 
+        print(stack)
+
         if char == ")":
             ns = []
             while True:
@@ -39,7 +41,12 @@ def parse_string(s):
                 assert ns[1] == r"\not"
 
                 if isinstance(ns[2], str):
-                    inner = Atomic(ns[2])
+                    if ns[2] == r"\true":
+                        inner = True_Sym()
+                    elif ns[2] == r"\false":
+                        inner = False_Sym()
+                    else:
+                        inner = Atomic(ns[2])
                 else:
                     inner = ns[2]
 
@@ -50,15 +57,26 @@ def parse_string(s):
                 oper = str_to_oper[ns[2]]
 
                 if isinstance(ns[1], str):
-                    left = Atomic(ns[1])
+                    if ns[1] == r"\true":
+                        left = True_Sym()
+                    elif ns[1] == r"\false":
+                        left = False_Sym()
+                    else:
+                        left = Atomic(ns[1])
                 else:
                     left = ns[1]
 
                 if isinstance(ns[3], str):
-                    right = Atomic(ns[3])
+                    if ns[3] == r"\true":
+                        right = True_Sym()
+                    elif ns[3] == r"\false":
+                        right = False_Sym()
+                    else:
+                        right = Atomic(ns[3])
                 else:
                     right = ns[3]
 
                 stack.append(TwoSided(left, right, oper))
 
+    print(stack[0])
     return stack[0]
