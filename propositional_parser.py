@@ -55,4 +55,7 @@ def parse_string(s):
 
                 stack.append(TwoSided(left, right, oper))
 
-    return stack[0]
+    if stack:
+        return stack[0]
+    else:
+        return None

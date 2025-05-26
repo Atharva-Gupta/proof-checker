@@ -20,3 +20,18 @@ def test_5():
 
 def test_6():
     assert parse_string(r"((((\not \false) \and B)))") == TwoSided(Negation(False_Sym()), Atomic("B"), Operator.AND)
+
+def test_7():
+    assert parse_string(r"(((((A)))))") == Atomic("A")
+
+def test_8():
+    assert parse_string(r"(((\not ((A)))))") == Negation(Atomic("A"))
+
+def test_9():
+    assert parse_string(r"(((\not ((A) \implies B))))") == Negation(TwoSided(Atomic("A"), Atomic("B"), Operator.IMPLIES))
+
+def test_10():
+    assert not parse_string(r"")
+
+def test_11():
+    assert not parse_string(r"()")
