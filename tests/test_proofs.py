@@ -1,5 +1,5 @@
 import pytest
-from proof import Proof, Sequent, InferenceRule
+from proof import Proof, Sequent, InferenceRule, Gamma
 from sentence import Negation
 from propositional_parser import parse_string
 
@@ -7,7 +7,8 @@ def test_1():
     g1 = parse_string(r"A \or B")
     g2 = parse_string(r"A \implies C")
     g3 = parse_string(r"B \implies C")
-    gamma = [g1, g2, g3]
+
+    gamma = Gamma(g1, g2, g3)
 
     as1 = parse_string(r"A")
     as2 = parse_string(r"B")
@@ -34,7 +35,7 @@ def test_2():
     c = parse_string(r"\not A")
     d = parse_string(r"\false")
 
-    gamma = [g1, g2, g3]
+    gamma = Gamma(g1, g2, g3)
     pr = Proof()
     assert (pr.add_sequent(Sequent(gamma, g1, InferenceRule.axiom)))
     assert (pr.add_sequent(Sequent(gamma, g2, InferenceRule.axiom)))
@@ -53,7 +54,7 @@ def test_3():
 
     c = parse_string(r"(A \and B) \and C")
 
-    gamma = [g1]
+    gamma = Gamma(g1)
     pr = Proof()
     assert pr.add_sequent(Sequent(gamma, g1, InferenceRule.axiom))
 
@@ -72,8 +73,8 @@ def test_4():
 
     c = parse_string(r"L \implies (L \and R)")
 
-    gamma = [g1]
-    gamma_prime = [as1] + gamma
+    gamma = Gamma(g1)
+    gamma_prime = gamma + [as1]
 
     pr = Proof()
     assert pr.add_sequent(Sequent(gamma, g1, InferenceRule.axiom))
@@ -93,7 +94,7 @@ def test_5():
 
     c3 = parse_string(r"P \implies R")
 
-    gamma = [g1, g2]
+    gamma = Gamma(g1, g2)
     gamma_prime = gamma + [as1]
 
     pr = Proof()
@@ -173,7 +174,7 @@ def test_8():
 
     c1 = parse_string(r"\false")
 
-    gamma = [g1, g2]
+    gamma = Gamma(g1, g2)
 
     gamma_one = gamma + [as1]
     gamma_two = gamma + [as2]
@@ -203,8 +204,9 @@ def test_9():
 
     c6 = parse_string(r"A \or (\not A)")
 
-    gamma = []
+    gamma = Gamma()
     gamma_one = gamma + [as1]
+
     gamma_two = gamma_one + [as2]
 
     pr = Proof()

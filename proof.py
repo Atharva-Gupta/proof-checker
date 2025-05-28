@@ -72,11 +72,7 @@ class Gamma(MutableSequence):
         return self
 
     def __add__(self, values):
-        print(self._items, values)
         new_items = deepcopy(self._items).__add__(values)
-        print(self)
-        print([item.__str__() for item in new_items])
-        print(Gamma(new_items))
         return Gamma(new_items)
 
     def __str__(self):
@@ -108,20 +104,9 @@ class Proof:
     def __init__(self):
         self.sequents = []
 
-    def gamma_equal(self, gamma1, gamma2):
-        if len(gamma1) != len(gamma2):
-            return False
-
-        for i in range(len(gamma1)):
-            if gamma1[i] not in gamma2:
-                return False
-
-        return True
-
     def proof_exists(self, gamma, conclusion):
         for sequent in self.sequents:
-            if gamma.__eq__(sequent.gamma) and sequent.conclusion == conclusion:
-            # if self.gamma_equal(gamma, sequent.gamma) and sequent.conclusion == conclusion:
+            if gamma == sequent.gamma and sequent.conclusion == conclusion:
                 return True
 
         return False
@@ -149,7 +134,7 @@ class Proof:
         elif potential.rule == InferenceRule.and_elim:
             for seq in self.sequents:
                 if isinstance(seq.conclusion, TwoSided) and seq.conclusion.oper == Operator.AND:
-                    if self.gamma_equal(seq.gamma, potential.gamma):
+                    if seq.gamma == potential.gamma:
                         if seq.conclusion.right == potential.conclusion or seq.conclusion.left == potential.conclusion:
                             return True
             return False
@@ -163,7 +148,7 @@ class Proof:
         elif potential.rule == InferenceRule.or_elim:
             phi_psi_options = []
             for seq in self.sequents:
-                if self.gamma_equal(seq.gamma, potential.gamma):
+                if seq.gamma == potential.gamma:
                     if isinstance(seq.conclusion, TwoSided) and seq.conclusion.oper == Operator.OR:
                         phi_psi_options.append(seq.conclusion)
 
@@ -185,7 +170,7 @@ class Proof:
         elif potential.rule == InferenceRule.implies_elim:
             for seq in self.sequents:
                 if isinstance(seq.conclusion, TwoSided) and seq.conclusion.oper == Operator.IMPLIES:
-                    if self.gamma_equal(seq.gamma, potential.gamma):
+                    if seq.gamma == potential.gamma:
                         if seq.conclusion.right == potential.conclusion and self.proof_exists(seq.gamma, seq.conclusion.left):
                             return True
 
@@ -202,7 +187,7 @@ class Proof:
         elif potential.rule == InferenceRule.not_elim:
             assert isinstance(potential.conclusion, False_Sym)
             for seq in self.sequents:
-                if self.gamma_equal(seq.gamma, potential.gamma) and self.proof_exists(seq.gamma, Negation(seq.conclusion)):
+                if seq.gamma == potential.gamma and self.proof_exists(seq.gamma, Negation(seq.conclusion)):
                     return True
 
             return False
