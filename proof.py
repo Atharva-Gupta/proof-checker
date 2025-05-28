@@ -1,7 +1,7 @@
 from sentence import TwoSided, Atomic, Negation, Sentence, True_Sym, False_Sym
 from sentence import Operator
 from propositional_parser import parse_string
-from typing import List
+from typing import List, MutableSequence
 from enum import Enum
 
 class InferenceRule(Enum):
@@ -19,6 +19,37 @@ class InferenceRule(Enum):
     false_elim = "FE"
 
     contra = "IP"
+
+
+class Gamma(MutableSequence):
+    def __init__(self):
+        self._items = []
+
+    def __getitem__(self, index) -> Sentence:
+        return self._items[index]
+
+    def __setitem__(self, index, value: Sentence):
+        self._items[index] = value
+
+    def __delitem__(self, index):
+        del self._items[index]
+
+    def __len__(self):
+        return len(self._items)
+
+    def insert(self, index, value: Sentence):
+        self._items.insert(index, value)
+
+    def __eq__(self, other_gamma):
+        if len(self) != len(other_gamma):
+            return False
+
+        for sentence in self:
+            if sentence not in other_gamma:
+                return False
+
+        return True
+
 
 class Sequent:
     gamma: List[Sentence]
@@ -159,5 +190,3 @@ class Proof:
 
         else:
             raise ValueError(f"Rule of inference {potential.rule} not supported!")
-
-        return False
