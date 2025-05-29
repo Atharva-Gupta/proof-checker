@@ -1,7 +1,7 @@
 from abc import ABC
 from enum import Enum
-from typing import Iterable
-
+from typing import List, Iterable, MutableSequence
+from copy import deepcopy
 from errors import VariableNotAssignedError
 
 class Sentence(ABC):
@@ -124,3 +124,59 @@ class TwoSided(Sentence):
 
     def __str__(self):
         return "(" + self.left.__str__() + " " + self.oper.value + " " + self.right.__str__() + ")"
+
+
+class Gamma(MutableSequence):
+    _items: List[Sentence]
+    def __init__(self, *args):
+        if len(args) == 0:
+            self._items = []
+        elif len(args) == 1:
+            arg = args[0]
+            if isinstance(arg, Sentence):
+                self._items = [arg]
+            elif isinstance(arg, (list, tuple)):
+                self._items = list(arg)
+            else:
+                pass
+        else:
+            self._items = list(args)
+
+    def __getitem__(self, index) -> Sentence:
+        return self._items[index]
+
+    def __setitem__(self, index, value: Sentence):
+        self._items[index] = value
+
+    def __delitem__(self, index):
+        del self._items[index]
+
+    def __len__(self):
+        return len(self._items)
+
+    def insert(self, index, value: Sentence):
+        self._items.insert(index, value)
+
+    def __eq__(self, other_gamma):
+        if not isinstance(other_gamma, Gamma):
+            return False
+
+        if len(self) != len(other_gamma):
+            return False
+
+        for sentence in self._items:
+            if sentence not in other_gamma._items:
+                return False
+
+        return True
+
+    def __iadd__(self, values):
+        self._items.__iadd__(values)
+        return self
+
+    def __add__(self, values):
+        new_items = deepcopy(self._items).__add__(values)
+        return Gamma(new_items)
+
+    def __str__(self):
+        return [item.__str__() for item in self._items].__str__()

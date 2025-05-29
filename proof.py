@@ -1,9 +1,6 @@
-from copy import deepcopy
-
 from sentence import TwoSided, Atomic, Negation, Sentence, True_Sym, False_Sym
-from sentence import Operator
-from propositional_parser import parse_string
-from typing import List, MutableSequence
+from sentence import Operator, Gamma
+from typing import List
 from enum import Enum
 
 class InferenceRule(Enum):
@@ -21,62 +18,6 @@ class InferenceRule(Enum):
     false_elim = "FE"
 
     contra = "IP"
-
-
-class Gamma(MutableSequence):
-    _items: List[Sentence]
-    def __init__(self, *args):
-        if len(args) == 0:
-            self._items = []
-        elif len(args) == 1:
-            arg = args[0]
-            if isinstance(arg, Sentence):
-                self._items = [arg]
-            elif isinstance(arg, (list, tuple)):
-                self._items = list(arg)
-            else:
-                pass
-        else:
-            self._items = list(args)
-
-    def __getitem__(self, index) -> Sentence:
-        return self._items[index]
-
-    def __setitem__(self, index, value: Sentence):
-        self._items[index] = value
-
-    def __delitem__(self, index):
-        del self._items[index]
-
-    def __len__(self):
-        return len(self._items)
-
-    def insert(self, index, value: Sentence):
-        self._items.insert(index, value)
-
-    def __eq__(self, other_gamma):
-        if not isinstance(other_gamma, Gamma):
-            return False
-
-        if len(self) != len(other_gamma):
-            return False
-
-        for sentence in self._items:
-            if sentence not in other_gamma._items:
-                return False
-
-        return True
-
-    def __iadd__(self, values):
-        self._items.__iadd__(values)
-        return self
-
-    def __add__(self, values):
-        new_items = deepcopy(self._items).__add__(values)
-        return Gamma(new_items)
-
-    def __str__(self):
-        return [item.__str__() for item in self._items].__str__()
 
 
 class Sequent:
@@ -193,6 +134,7 @@ class Proof:
             return False
 
         elif potential.rule == InferenceRule.true_intro:
+            assert isinstance(potential.conclusion, True_Sym)
             return True
 
         elif potential.rule == InferenceRule.false_elim:
