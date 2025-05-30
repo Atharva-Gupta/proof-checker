@@ -220,3 +220,14 @@ def test_9():
     assert pr.add_sequent(Sequent(gamma_one, as1, InferenceRule.axiom))
     assert pr.add_sequent(Sequent(gamma_one, c5, InferenceRule.not_elim))
     assert pr.add_sequent(Sequent(gamma, c6, InferenceRule.contra))
+
+def test_10():
+    g1 = parse_string(r"B")
+    g2 = parse_string(r"\not A")
+
+    gamma = Gamma(g1)
+    gamma_one = Gamma(g1, g2)
+
+    pr = Proof()
+    assert pr.add_sequent(Sequent(gamma, g1, InferenceRule.axiom))
+    assert pr.add_sequent(Sequent(gamma_one, g1, InferenceRule.expand))

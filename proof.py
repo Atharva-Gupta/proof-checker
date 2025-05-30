@@ -1,6 +1,6 @@
 from sentence import TwoSided, Atomic, Negation, Sentence, True_Sym, False_Sym
 from sentence import Operator, Gamma
-from typing import List
+from typing import List, MutableSequence
 from enum import Enum
 
 class InferenceRule(Enum):
@@ -17,6 +17,7 @@ class InferenceRule(Enum):
     true_intro = "TI"
     false_elim = "FE"
 
+    expand = "EX"
     contra = "IP"
 
 
@@ -146,6 +147,13 @@ class Proof:
             gamma_prime = potential.gamma + [Negation(potential.conclusion)]
             if self.proof_exists(gamma_prime, False_Sym()):
                 return True
+            return False
+
+        elif potential.rule == InferenceRule.expand:
+            for seq in self.sequents:
+                if seq.gamma.is_subset_of(potential.gamma) and potential.conclusion == seq.conclusion:
+                    return True
+
             return False
 
         else:

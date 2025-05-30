@@ -170,6 +170,13 @@ class Gamma(MutableSequence):
 
         return True
 
+    def is_subset_of(self, other):
+        for sentence in self._items:
+            if sentence not in other:
+                return False
+
+        return True
+
     def __iadd__(self, values):
         self._items.__iadd__(values)
         return self
