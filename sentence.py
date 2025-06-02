@@ -182,7 +182,12 @@ class Gamma(MutableSequence):
         return self
 
     def __add__(self, values):
-        new_items = deepcopy(self._items).__add__(values)
+        if isinstance(values, Gamma):
+            new_items = deepcopy(self._items).__add__(deepcopy(values._items))
+        elif isinstance(values, list):
+            new_items = deepcopy(self._items).__add__(values)
+        else:
+            raise AttributeError(f"values type {type(values)} not supported!")
         return Gamma(new_items)
 
     def __str__(self):

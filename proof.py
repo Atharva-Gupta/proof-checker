@@ -158,3 +158,6 @@ class Proof:
 
         else:
             raise ValueError(f"Rule of inference {potential.rule} not supported!")
+
+    def __str__(self):
+        return "[" + ", ".join([seq.__str__() for seq in self.sequents]) + "]"

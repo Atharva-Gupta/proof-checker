@@ -12,25 +12,36 @@ class FitchSubProof():
 
         self.outer_proof = outer_proof
 
-        if self.has_outer:
-            self.gamma = self.outer_proof.gamma + self.outer_proof.assumptions._items  # technically incorrect by note above
-        else:
-            self.gamma = Gamma()
-
-        self.assumptions = Gamma()
+        self.gamma = Gamma()
         self.pr = Proof()
 
         self.inners = []
 
     def add_assumption(self, sentence) -> bool:
-        self.assumptions += [sentence]
+        self.gamma += [sentence]
+
+        # TODO: need to re-implement the loading stuff because this cannot handle more than one assumption
+        # per subproof at a time.
+        if self.has_outer:
+            self.add_conclusion(sentence, InferenceRule.axiom, self.gamma)
+        else:
+            self.add_conclusion(sentence, InferenceRule.axiom, Gamma())
+
         return True
 
     def add_conclusion(self, sentence: Sentence, inf_rule: InferenceRule, additional_gamma: Gamma = Gamma()) -> bool:
-        # return self.pr.add_sequent(Sequent(self.assumptions, sentence, inf_rule))
         if self.has_outer:
             return self.outer_proof.add_conclusion(sentence, inf_rule, self.gamma + additional_gamma)
         else:
+            print(sentence, inf_rule, additional_gamma)
+
+            # print("tp", (self.gamma))
+            # print("addtp", (additional_gamma))
+            # print()
+
+            # print(self.pr.__str__())
+            # print("added", self.gamma + additional_gamma, sentence, inf_rule)
+
             return self.pr.add_sequent(Sequent(self.gamma + additional_gamma, sentence, inf_rule))
 
     def sequent_style(self) -> Proof:
