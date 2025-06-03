@@ -15,25 +15,34 @@ class FitchSubProof():
         self.gamma = Gamma()
         self.pr = Proof()
 
+        self.loaded = False
+
         self.inners = []
 
     def add_assumption(self, sentence) -> bool:
-        self.gamma += [sentence]
-
-        # TODO: need to re-implement the loading stuff because this cannot handle more than one assumption
-        # per subproof at a time.
-        if self.has_outer:
-            self.add_conclusion(sentence, InferenceRule.axiom, self.gamma)
+        if not self.loaded:
+            self.gamma += [sentence]
+            return True
         else:
-            self.add_conclusion(sentence, InferenceRule.axiom, Gamma())
+            return False
 
-        return True
+    def load_assumptions(self):
+        for sentence in self.gamma:
+            if self.has_outer:
+                self.add_conclusion(sentence, InferenceRule.axiom, self.gamma, True)
+            else:
+                self.add_conclusion(sentence, InferenceRule.axiom, Gamma(), True)
 
-    def add_conclusion(self, sentence: Sentence, inf_rule: InferenceRule, additional_gamma: Gamma = Gamma()) -> bool:
+        self.loaded = True
+
+    def add_conclusion(self, sentence: Sentence, inf_rule: InferenceRule, additional_gamma: Gamma = Gamma(), is_assumption: bool = False) -> bool:
+        if not is_assumption and not self.loaded:
+            self.load_assumptions()
+
         if self.has_outer:
             return self.outer_proof.add_conclusion(sentence, inf_rule, self.gamma + additional_gamma)
         else:
-            print(sentence, inf_rule, additional_gamma)
+            print(sentence, inf_rule, self.gamma + additional_gamma)
 
             # print("tp", (self.gamma))
             # print("addtp", (additional_gamma))
@@ -46,7 +55,7 @@ class FitchSubProof():
 
     def sequent_style(self) -> Proof:
         if self.has_outer:
-            raise ValueError("Inner-level sequent proofs do not have their own proofs!")
+            raise ValueError("Inner-level fitch proofs do not have their own sequent proofs!")
         return self.pr
 
     def add_subproof(self):
