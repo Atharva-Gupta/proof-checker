@@ -26,23 +26,27 @@ class FitchSubProof():
         else:
             return False
 
-    def load_assumptions(self):
+    def load_assumptions(self, additional_gamma: Gamma = Gamma()):
         for sentence in self.gamma:
-            if self.has_outer:
-                self.add_conclusion(sentence, InferenceRule.axiom, self.gamma, True)
-            else:
-                self.add_conclusion(sentence, InferenceRule.axiom, Gamma(), True)
+            # if self.has_outer:
+            self.add_conclusion(sentence, InferenceRule.axiom, Gamma(), True)
+            # else:
+            #     self.add_conclusion(sentence, InferenceRule.axiom, Gamma(), True)
 
         self.loaded = True
+
+        if self.has_outer:
+            self.outer_proof.load_assumptions(self.gamma + additional_gamma)
 
     def add_conclusion(self, sentence: Sentence, inf_rule: InferenceRule, additional_gamma: Gamma = Gamma(), is_assumption: bool = False) -> bool:
         if not is_assumption and not self.loaded:
             self.load_assumptions()
 
         if self.has_outer:
-            return self.outer_proof.add_conclusion(sentence, inf_rule, self.gamma + additional_gamma)
+            # return self.outer_proof.add_conclusion(sentence, inf_rule, self.gamma + additional_gamma)
+            return self.outer_proof.add_conclusion(sentence, inf_rule, self.gamma + additional_gamma, is_assumption)
         else:
-            print(sentence, inf_rule, self.gamma + additional_gamma)
+            print(self.gamma + additional_gamma, sentence, inf_rule)
 
             # print("tp", (self.gamma))
             # print("addtp", (additional_gamma))
@@ -51,6 +55,7 @@ class FitchSubProof():
             # print(self.pr.__str__())
             # print("added", self.gamma + additional_gamma, sentence, inf_rule)
 
+            # return self.pr.add_sequent(Sequent(self.gamma + additional_gamma, sentence, inf_rule))
             return self.pr.add_sequent(Sequent(self.gamma + additional_gamma, sentence, inf_rule))
 
     def sequent_style(self) -> Proof:
@@ -58,6 +63,7 @@ class FitchSubProof():
             raise ValueError("Inner-level fitch proofs do not have their own sequent proofs!")
         return self.pr
 
-    def add_subproof(self):
-        self.inners.append(FitchSubProof(self))
-        return True
+    def add_subproof(self) -> "FitchSubProof":
+        sp = FitchSubProof(self)
+        self.inners.append(sp)
+        return sp
