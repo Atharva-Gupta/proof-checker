@@ -39,19 +39,16 @@ def test_3():
     fi = FitchSubProof()
     assert fi.add_assumption(g1)
     assert fi.add_assumption(g2)
+    assert fi.add_assumption(g3)
 
     inner_1 = fi.add_subproof()
     assert inner_1.add_assumption(parse_string(r"A"))
-    print(fi.gamma)
-    print(inner_1.gamma)
-
-    # inner_1.load_assumptions()
-
-    # print(fi.pr)
     assert inner_1.add_conclusion(parse_string(r"C"), InferenceRule.implies_elim)
 
     inner_2 = fi.add_subproof()
     assert inner_2.add_assumption(parse_string(r"B"))
     assert inner_2.add_conclusion(parse_string(r"C"), InferenceRule.implies_elim)
+
+    print(fi.pr)
 
     assert fi.add_conclusion(parse_string(r"C"), InferenceRule.or_elim)
