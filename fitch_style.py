@@ -27,45 +27,30 @@ class FitchSubProof():
             return False
 
     def load_assumptions(self, additional_gamma: Gamma = Gamma()):
-        # for sentence in self.gamma:
-            # if self.has_outer:
-            # self.add_conclusion(sentence, InferenceRule.axiom, Gamma(), True)
-            # else:
-            #     self.add_conclusion(sentence, InferenceRule.axiom, Gamma(), True)
-
         temp_gamma = self.gamma + additional_gamma
         if not self.has_outer:
+            # need to load both combinations of assumptions (current assumptions as well as
+            # current assumptions + inner proof assumptions), eventually though maybe
+            # we can switch to only loading one and updating the inference rules.
             for sentence in self.gamma:
                 self.pr.add_sequent(Sequent(self.gamma, sentence, InferenceRule.axiom))
+
             for sentence in temp_gamma:
                 self.pr.add_sequent(Sequent(temp_gamma, sentence, InferenceRule.axiom))
         else:
+            # again, loading both combinations of assumptions
             self.outer_proof.load_assumptions(temp_gamma)
             self.outer_proof.load_assumptions(self.gamma)
 
         self.loaded = True
-
-        # if self.has_outer:
-        #     self.outer_proof.load_assumptions(self.gamma + additional_gamma)
 
     def add_conclusion(self, sentence: Sentence, inf_rule: InferenceRule, additional_gamma: Gamma = Gamma(), is_assumption: bool = False) -> bool:
         if not is_assumption and not self.loaded:
             self.load_assumptions()
 
         if self.has_outer:
-            # return self.outer_proof.add_conclusion(sentence, inf_rule, self.gamma + additional_gamma)
             return self.outer_proof.add_conclusion(sentence, inf_rule, self.gamma + additional_gamma, is_assumption)
         else:
-            # print(self.gamma + additional_gamma, sentence, inf_rule)
-
-            # print("tp", (self.gamma))
-            # print("addtp", (additional_gamma))
-            # print()
-
-            # print(self.pr.__str__())
-            # print("added", self.gamma + additional_gamma, sentence, inf_rule)
-
-            # return self.pr.add_sequent(Sequent(self.gamma + additional_gamma, sentence, inf_rule))
             return self.pr.add_sequent(Sequent(self.gamma + additional_gamma, sentence, inf_rule))
 
     def sequent_style(self) -> Proof:
