@@ -2,7 +2,7 @@ from abc import ABC
 from enum import Enum
 from typing import List, Iterable, MutableSequence
 from copy import deepcopy
-from errors import VariableNotAssignedError
+from .errors import VariableNotAssignedError
 
 class Sentence(ABC):
     def evaluate(self, variable_assignment: dict) -> bool:

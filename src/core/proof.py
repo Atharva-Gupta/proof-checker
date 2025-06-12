@@ -1,5 +1,5 @@
-from sentence import TwoSided, Atomic, Negation, Sentence, True_Sym, False_Sym
-from sentence import Operator, Gamma
+from .sentence import TwoSided, Atomic, Negation, Sentence, True_Sym, False_Sym
+from .sentence import Operator, Gamma
 from typing import List, MutableSequence
 from enum import Enum
 

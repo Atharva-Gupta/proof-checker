@@ -1,5 +1,5 @@
-from errors import ParseError
-from sentence import Atomic,  Negation, TwoSided, Operator, True_Sym, False_Sym
+from src.core.errors import ParseError
+from src.core.sentence import Atomic,  Negation, TwoSided, Operator, True_Sym, False_Sym
 
 import re
 

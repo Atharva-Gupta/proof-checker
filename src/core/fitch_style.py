@@ -1,5 +1,5 @@
-from proof import Proof, Sequent, InferenceRule, Gamma
-from sentence import Sentence, TwoSided, Atomic, Negation, Operator, True_Sym, False_Sym
+from .proof import Proof, Sequent, InferenceRule, Gamma
+from .sentence import Sentence, TwoSided, Atomic, Negation, Operator, True_Sym, False_Sym
 
 class FitchSubProof():
     assumptions: Gamma

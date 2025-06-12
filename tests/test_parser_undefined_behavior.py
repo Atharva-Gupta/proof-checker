@@ -1,6 +1,6 @@
 import pytest
-from propositional_parser import parse_string, insert_spaces
-from sentence import Atomic, TwoSided, Operator, Negation, True_Sym, False_Sym
+from src.parsing.propositional_parser import parse_string, insert_spaces
+from src.core.sentence import Atomic, TwoSided, Operator, Negation, True_Sym, False_Sym
 
 class TestParserUndefinedBehavior:
     """Test cases for parser edge cases, malformed input, and undefined behavior."""

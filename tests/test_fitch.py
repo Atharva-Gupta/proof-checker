@@ -1,8 +1,8 @@
 import pytest
-from proof import Proof, Sequent, InferenceRule, Gamma
-from sentence import Negation
-from propositional_parser import parse_string
-from fitch_style import FitchSubProof
+from src.core.proof import Proof, Sequent, InferenceRule, Gamma
+from src.core.sentence import Negation
+from src.parsing.propositional_parser import parse_string
+from src.core.fitch_style import FitchSubProof
 
 def test_1():
     g1 = parse_string(r"A \or B ")

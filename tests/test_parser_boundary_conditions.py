@@ -1,7 +1,7 @@
 import pytest
 import sys
-from propositional_parser import parse_string
-from sentence import Atomic, TwoSided, Operator, Negation, True_Sym, False_Sym
+from src.parsing.propositional_parser import parse_string
+from src.core.sentence import Atomic, TwoSided, Operator, Negation, True_Sym, False_Sym
 
 class TestParserBoundaryConditions:
     """Test boundary conditions and stress testing for the parser."""

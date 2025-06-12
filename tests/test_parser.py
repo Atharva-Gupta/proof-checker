@@ -1,7 +1,7 @@
 import pytest
-from proof import Proof, Sequent, InferenceRule
-from propositional_parser import parse_string
-from sentence import Atomic, TwoSided, Operator, Negation, True_Sym, False_Sym
+from src.core.proof import Proof, Sequent, InferenceRule
+from src.parsing.propositional_parser import parse_string
+from src.core.sentence import Atomic, TwoSided, Operator, Negation, True_Sym, False_Sym
 
 def test_1():
     assert parse_string(r"(A) \and (B)") == TwoSided(Atomic("A"), Atomic("B"), Operator.AND)
