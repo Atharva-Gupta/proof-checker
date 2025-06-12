@@ -34,7 +34,8 @@ class Sequent:
         s = "["
         for sent in self.gamma[:-1]:
             s += sent.__str__() + ", "
-        s += self.gamma[-1].__str__()
+        if self.gamma:
+            s += self.gamma[-1].__str__()
         s += "] proves "
         s += self.conclusion.__str__()
         s += f" :{self.rule.value}"

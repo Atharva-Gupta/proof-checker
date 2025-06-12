@@ -67,12 +67,14 @@ def check_proof():
                 conclusion_str = conclusion_str.strip()
                 rule_str = rule_str.strip()
 
+                assumptions_str = assumptions_str.strip('[]')
+                assumptions_str = assumptions_str.strip()
+
                 # Parse assumptions
-                if assumptions_str == '[]' or assumptions_str == '':
+                if assumptions_str == '':
                     gamma = Gamma()
                 else:
-                    # Remove brackets and split by comma
-                    assumptions_str = assumptions_str.strip('[]')
+                    # Split by comma
                     assumption_strs = [s.strip() for s in assumptions_str.split(',') if s.strip()]
                     assumptions = [parse_string(s) for s in assumption_strs]
                     gamma = Gamma(assumptions)
