@@ -57,12 +57,18 @@ Example:
 [(p \and q)] |- p :AE"></textarea>
                 <button id="check-proof" class="btn btn-primary mt-3">Check Proof</button>
                 <button id="clear-proof" class="btn btn-secondary mt-3 ms-2">Clear</button>
+                <div class="form-check mt-2">
+                    <input class="form-check-input" type="checkbox" id="auto-check" checked>
+                    <label class="form-check-label" for="auto-check">
+                        Auto-check as you type
+                    </label>
+                </div>
             </div>
             
             <div class="col-md-6">
                 <h3>Results:</h3>
                 <div id="results" class="border rounded p-3" style="min-height: 400px; background-color: #f8f9fa;">
-                    <p class="text-muted">Enter a proof and click "Check Proof" to see results here.</p>
+                    <p class="text-muted">Enter a proof to see results here.</p>
                 </div>
             </div>
         </div>
@@ -100,12 +106,14 @@ Example:
     </div>
 
     <script>
-        document.getElementById('check-proof').addEventListener('click', function() {
+        let autoCheckTimeout;
+        
+        function checkProof() {
             const proofText = document.getElementById('proof-input').value;
             const resultsDiv = document.getElementById('results');
             
             if (!proofText.trim()) {
-                resultsDiv.innerHTML = '<p class="text-warning">Please enter a proof to check.</p>';
+                resultsDiv.innerHTML = '<p class="text-muted">Enter a proof to see results here.</p>';
                 return;
             }
             
@@ -127,11 +135,20 @@ Example:
             .catch(error => {
                 resultsDiv.innerHTML = `<p class="text-danger">Error: ${error.message}</p>`;
             });
+        }
+        
+        document.getElementById('check-proof').addEventListener('click', checkProof);
+        
+        document.getElementById('proof-input').addEventListener('input', function() {
+            if (document.getElementById('auto-check').checked) {
+                clearTimeout(autoCheckTimeout);
+                autoCheckTimeout = setTimeout(checkProof, 500);
+            }
         });
         
         document.getElementById('clear-proof').addEventListener('click', function() {
             document.getElementById('proof-input').value = '';
-            document.getElementById('results').innerHTML = '<p class="text-muted">Enter a proof and click "Check Proof" to see results here.</p>';
+            document.getElementById('results').innerHTML = '<p class="text-muted">Enter a proof to see results here.</p>';
         });
         
         function displayResults(data) {
