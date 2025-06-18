@@ -54,6 +54,8 @@ def parse_string(s):
                 right = parse_single(ns[3])
 
                 stack.append(TwoSided(left, right, oper))
+            else:
+                raise ParseError(f"All inner expressions require explicit surrounding parentheses! {len(ns)}")
 
     if stack:
         return stack[0]
