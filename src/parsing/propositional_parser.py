@@ -20,9 +20,25 @@ def parse_single(s):
     else:
         return s
 
+def balanced_parentheses(s):
+    count = 0
+    for char in s:
+        if char == "(":
+            count += 1
+        elif char == ")":
+            count -= 1
+
+        if count < 0:
+            return False
+
+    return count == 0
+
 def parse_string(s):
     s = "(" + s + ")"
     s = insert_spaces(s)
+
+    if not balanced_parentheses(s):
+        raise ParseError(f"Must have the same number of inner and outer parentheses!")
 
     stack = []
     for char in s:
@@ -40,9 +56,13 @@ def parse_string(s):
             ns = ns[::-1]
 
             if len(ns) == 3:
+                if ns[1][0] == "\\":
+                    raise ParseError("Expressions must be accompanied with at least one operand!")
+
                 stack.append(parse_single(ns[1]))
             elif len(ns) == 4:
-                assert ns[1] == r"\not"
+                if ns[1] != r"\not":
+                    raise ParseError("Expression is ill-formed!")
 
                 inner = parse_single(ns[2])
                 stack.append(Negation(inner))
@@ -54,6 +74,8 @@ def parse_string(s):
                 right = parse_single(ns[3])
 
                 stack.append(TwoSided(left, right, oper))
+            elif len(ns) == 2:
+                pass
             else:
                 raise ParseError(f"All inner expressions require explicit surrounding parentheses! {len(ns)}")
 
