@@ -33,7 +33,7 @@
 <body>
     <div class="container mt-4">
         <h1 class="mb-4">Propositional Logic Proof Checker</h1>
-        
+
         <div class="help-section">
             <h5>How to use:</h5>
             <p><strong>Format:</strong> <code>[assumptions] |- conclusion :RULE</code></p>
@@ -64,15 +64,24 @@ Example:
                     </label>
                 </div>
             </div>
-            
+
             <div class="col-md-6">
                 <h3>Results:</h3>
-                <div id="results" class="border rounded p-3" style="min-height: 400px; background-color: #f8f9fa;">
+                <div id="results" class="border rounded p-3" style="min-height: 200px; background-color: #f8f9fa;">
                     <p class="text-muted">Enter a proof to see results here.</p>
                 </div>
             </div>
         </div>
-        
+
+        <div class="row mt-3">
+            <div class="col-md-6">
+                <h5 id="step-by-step-title" style="display: none;">Step-by-step results:</h5>
+            </div>
+            <div class="col-md-6">
+                <div id="step-by-step-results"></div>
+            </div>
+        </div>
+
         <div class="row mt-4">
             <div class="col-12">
                 <div class="alert alert-info">
@@ -107,18 +116,20 @@ Example:
 
     <script>
         let autoCheckTimeout;
-        
+
         function checkProof() {
             const proofText = document.getElementById('proof-input').value;
             const resultsDiv = document.getElementById('results');
-            
+
             if (!proofText.trim()) {
                 resultsDiv.innerHTML = '<p class="text-muted">Enter a proof to see results here.</p>';
+                document.getElementById('step-by-step-title').style.display = 'none';
+                document.getElementById('step-by-step-results').innerHTML = '';
                 return;
             }
-            
+
             resultsDiv.innerHTML = '<p class="text-info">Checking proof...</p>';
-            
+
             fetch('/check-proof', {
                 method: 'POST',
                 headers: {
@@ -136,60 +147,65 @@ Example:
                 resultsDiv.innerHTML = `<p class="text-danger">Error: ${error.message}</p>`;
             });
         }
-        
+
         document.getElementById('check-proof').addEventListener('click', checkProof);
-        
+
         document.getElementById('proof-input').addEventListener('input', function() {
             if (document.getElementById('auto-check').checked) {
                 clearTimeout(autoCheckTimeout);
                 autoCheckTimeout = setTimeout(checkProof, 500);
             }
         });
-        
+
         document.getElementById('clear-proof').addEventListener('click', function() {
             document.getElementById('proof-input').value = '';
             document.getElementById('results').innerHTML = '<p class="text-muted">Enter a proof to see results here.</p>';
+            document.getElementById('step-by-step-title').style.display = 'none';
+            document.getElementById('step-by-step-results').innerHTML = '';
         });
-        
+
         function displayResults(data) {
             const resultsDiv = document.getElementById('results');
+            const stepByStepTitle = document.getElementById('step-by-step-title');
+            const stepByStepResults = document.getElementById('step-by-step-results');
             let html = '';
-            
+            let stepByStepHtml = '';
+
             if (data.valid) {
-                html = '<div class="alert alert-success"><strong>✓ Proof is valid!</strong></div>';
-                html += '<h5>Step-by-step results:</h5>';
-                
+                stepByStepHtml = '<div class="alert alert-success"><strong>✓ Proof is valid!</strong></div>';
+
                 data.results.forEach(result => {
                     html += `<div class="result-valid p-2 mb-2 rounded">
-                        <span class="line-number">Line ${result.line}:</span> 
+                        <span class="line-number">Line ${result.line}:</span>
                         <span class="text-success">✓ Valid</span>
                         <br><small class="text-muted">${result.sequent}</small>
                     </div>`;
                 });
             } else {
-                html = '<div class="alert alert-danger"><strong>✗ Proof contains errors</strong></div>';
-                html += '<h5>Step-by-step results:</h5>';
-                
+                stepByStepHtml = '<div class="alert alert-danger"><strong>✗ Proof contains errors</strong></div>';
+
                 data.results.forEach(result => {
                     if (result.valid) {
                         html += `<div class="result-valid p-2 mb-2 rounded">
-                            <span class="line-number">Line ${result.line}:</span> 
+                            <span class="line-number">Line ${result.line}:</span>
                             <span class="text-success">✓ Valid</span>
                             <br><small class="text-muted">${result.sequent}</small>
                         </div>`;
                     } else {
                         html += `<div class="result-invalid p-2 mb-2 rounded">
-                            <span class="line-number">Line ${result.line}:</span> 
+                            <span class="line-number">Line ${result.line}:</span>
                             <span class="text-danger">✗ Error</span>
                             <br><small class="text-danger">${result.error}</small>
                         </div>`;
                     }
                 });
             }
-            
+
             resultsDiv.innerHTML = html;
+            stepByStepResults.innerHTML = stepByStepHtml;
+            stepByStepTitle.style.display = 'block';
         }
-        
+
         // Allow Ctrl+Enter to check proof
         document.getElementById('proof-input').addEventListener('keydown', function(e) {
             if (e.ctrlKey && e.key === 'Enter') {

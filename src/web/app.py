@@ -3,6 +3,7 @@ from flask_cors import CORS
 from src.parsing.propositional_parser import parse_string
 from src.core.proof import Proof, Sequent, InferenceRule
 from src.core.sentence import Gamma
+from src.core.errors import ParseError
 import traceback
 
 app = Flask(__name__)
@@ -124,7 +125,7 @@ def check_proof():
                         'error': f'Invalid inference for rule {rule_str}'
                     })
 
-            except Exception as e:
+            except ParseError as e:
                 results.append({
                     'line': i + 1,
                     'valid': False,
