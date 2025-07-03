@@ -55,8 +55,6 @@ def parse_string(s):
 
             ns = ns[::-1]
 
-            print(ns)
-
             if len(ns) == 3:
                 if isinstance(ns[1], str) and ns[1][0] == "\\":
                     raise ParseError("Expressions must be accompanied with at least one operand!")
