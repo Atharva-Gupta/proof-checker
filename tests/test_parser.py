@@ -16,7 +16,7 @@ def test_4():
     assert parse_string(r"\true \and B") == TwoSided(True_Sym(), Atomic("B"), Operator.AND)
 
 def test_5():
-    assert parse_string(r"(\true) \and B") == TwoSided(True_Sym(), Atomic("B"), Operator.AND)
+    assert parse_string(r"\true \and B") == TwoSided(True_Sym(), Atomic("B"), Operator.AND)
 
 def test_6():
     assert parse_string(r"((((\not \false) \and B)))") == TwoSided(Negation(False_Sym()), Atomic("B"), Operator.AND)
