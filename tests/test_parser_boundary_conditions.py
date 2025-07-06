@@ -112,7 +112,7 @@ class TestParserBoundaryConditions:
 
         for expr, description in cases:
             # These should fail because parser requires explicit parentheses
-            with pytest.raises((AssertionError, IndexError, KeyError, ParseError)):
+            with pytest.raises((ParseError)):
                 parse_string(expr)
 
     def test_all_operator_combinations(self):
