@@ -68,7 +68,10 @@ def parse_string(s):
                 stack.append(Negation(inner))
             elif len(ns) == 5:
                 str_to_oper = {r"\or": Operator.OR, r"\and": Operator.AND, r"\implies": Operator.IMPLIES}
-                oper = str_to_oper[ns[2]]
+                try:
+                    oper = str_to_oper[ns[2]]
+                except KeyError:
+                    raise ParseError(f"Operator {ns[2]} not defined!")
 
                 left = parse_single(ns[1])
                 right = parse_single(ns[3])

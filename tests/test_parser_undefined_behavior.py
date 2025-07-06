@@ -133,7 +133,7 @@ class TestParserUndefinedBehavior:
         assert result == Atomic("α")
 
         # Test unicode operators (should fail)
-        with pytest.raises(KeyError):
+        with pytest.raises(ParseError):
             parse_string("A ∧ B")  # Unicode AND symbol
 
     def test_very_long_expressions(self):
