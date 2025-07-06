@@ -56,7 +56,7 @@ def parse_string(s):
             ns = ns[::-1]
 
             if len(ns) == 3:
-                if isinstance(ns[1], str) and ns[1][0] == "\\":
+                if isinstance(ns[1], str) and ns[1][0] == "\\" and ns[1] not in ("\\true", "\\false"):
                     raise ParseError("Expressions must be accompanied with at least one operand!")
 
                 stack.append(parse_single(ns[1]))
