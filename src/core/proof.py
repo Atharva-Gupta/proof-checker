@@ -69,7 +69,8 @@ class Proof:
             return False
 
         elif potential.rule == InferenceRule.and_intro:
-            assert isinstance(potential.conclusion, TwoSided) and potential.conclusion.oper == Operator.AND
+            if not isinstance(potential.conlcusion, TwoSided) or potential.conclusion.oper != Operator.AND:
+                return False
             if self.proof_exists(potential.gamma, potential.conclusion.left) and self.proof_exists(potential.gamma, potential.conclusion.right):
                 return True
             return False
@@ -83,7 +84,8 @@ class Proof:
             return False
 
         elif potential.rule == InferenceRule.or_intro:
-            assert isinstance(potential.conclusion, TwoSided) and potential.conclusion.oper == Operator.OR
+            if not isinstance(potential.conclusion, TwoSided) or potential.conclusion.oper != Operator.OR:
+                return False
             if self.proof_exists(potential.gamma, potential.conclusion.left) or self.proof_exists(potential.gamma, potential.conclusion.right):
                 return True
             return False
@@ -104,7 +106,8 @@ class Proof:
             return False
 
         elif potential.rule == InferenceRule.implies_intro:
-            assert isinstance(potential.conclusion, TwoSided) and potential.conclusion.oper == Operator.IMPLIES
+            if not isinstance(potential.conclusion, TwoSided) and potential.conclusion.oper != Operator.IMPLIES:
+                return False
             gamma_prime = potential.gamma + [potential.conclusion.left]
             if self.proof_exists(gamma_prime, potential.conclusion.right):
                 return True
@@ -120,7 +123,8 @@ class Proof:
             return False
 
         elif potential.rule == InferenceRule.not_intro:
-            assert isinstance(potential.conclusion, Negation)
+            if not isinstance(potential.conclusion, Negation):
+                return False
             gamma_prime = potential.gamma + [potential.conclusion.inner]
 
             if self.proof_exists(gamma_prime, False_Sym()):
@@ -128,7 +132,8 @@ class Proof:
             return False
 
         elif potential.rule == InferenceRule.not_elim:
-            assert isinstance(potential.conclusion, False_Sym)
+            if not isinstance(potential.conclusion, False_Sym):
+                return False
             for seq in self.sequents:
                 if seq.gamma == potential.gamma and self.proof_exists(seq.gamma, Negation(seq.conclusion)):
                     return True
@@ -136,7 +141,8 @@ class Proof:
             return False
 
         elif potential.rule == InferenceRule.true_intro:
-            assert isinstance(potential.conclusion, True_Sym)
+            if not isinstance(potential.conclusion, True_Sym):
+                return False
             return True
 
         elif potential.rule == InferenceRule.false_elim:
