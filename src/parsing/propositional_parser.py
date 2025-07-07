@@ -3,16 +3,22 @@ from src.core.sentence import Atomic,  Negation, TwoSided, Operator, True_Sym, F
 
 import re
 
-def insert_spaces(text):
-    return [part for part in re.split(r'(\(|\)|\s+)', text) if part and not re.match(r'^\s+$', part)]
+def insert_spaces(expression):
+    """
+    Splits a logical expression into an array where each element is a symbol (removes whitespaces, and separates
+    out parentheses).
+    """
+    return [part for part in re.split(r'(\(|\)|\s+)', expression) if part and not re.match(r'^\s+$', part)]
 
-def parse_atomic(s):
-    if s == r"\true":
+def parse_atomic(atomic_expr):
+    if atomic_expr == r"\true":
         return True_Sym()
-    elif s == r"\false":
+    elif atomic_expr == r"\false":
         return False_Sym()
     else:
-        return Atomic(s)
+        if atomic_expr[0] == "\\":
+            raise ParseError(r"Atomic symbols cannot begin with a backslash!")
+        return Atomic(atomic_expr)
 
 def parse_single(s):
     if isinstance(s, str):
@@ -20,9 +26,9 @@ def parse_single(s):
     else:
         return s
 
-def balanced_parentheses(s):
+def balanced_parentheses(expression):
     count = 0
-    for char in s:
+    for char in expression:
         if char == "(":
             count += 1
         elif char == ")":
@@ -38,7 +44,7 @@ def parse_string(s):
     s = insert_spaces(s)
 
     if not balanced_parentheses(s):
-        raise ParseError(f"Must have the same number of inner and outer parentheses!")
+        raise ParseError(f"Must have the same number of opening and closing parentheses!")
 
     stack = []
     for char in s:
@@ -53,6 +59,7 @@ def parse_string(s):
                 if x == "(":
                     break
 
+            # note that ns[0] = "(" and ns[-1] = ")"
             ns = ns[::-1]
 
             if len(ns) == 3:
