@@ -16,6 +16,10 @@ def index():
     return render_template('index.html')
 
 def line2conclusion(line):
+    """
+    Parse the following format: "conclusion :RULE". This will appear in both sequent-style and
+    fitch-style proofs.
+    """
     if ':' not in line:
         raise ParseError('Invalid format. Missing inference rule.' \
                          'Expected format: [assumption_1, assumption_2, ...] |- conclusion :RULE')
@@ -24,10 +28,8 @@ def line2conclusion(line):
     conclusion_str = conclusion_str.strip()
     rule_str = rule_str.strip()
 
-    # Parse conclusion
     conclusion = parse_string(conclusion_str)
 
-    # Parse rule
     rule_map = {
         'AX': InferenceRule.axiom,
         'AI': InferenceRule.and_intro,
@@ -68,11 +70,9 @@ def line2sequent(line):
     assumptions_str = assumptions_str.strip('[]')
     assumptions_str = assumptions_str.strip()
 
-    # Parse assumptions
     if assumptions_str == '':
         gamma = Gamma()
     else:
-        # Split by comma
         assumption_strs = [s.strip() for s in assumptions_str.split(',') if s.strip()]
         assumptions = [parse_string(s) for s in assumption_strs]
         gamma = Gamma(assumptions)
@@ -111,7 +111,6 @@ def check_proof():
             })
             continue
 
-        # Check if sequent is valid
         if proof.add_sequent(sequent):
             results.append({
                 'line': i + 1,
@@ -125,7 +124,6 @@ def check_proof():
                 'error': f'Invalid inference for rule {sequent.rule}'
             })
 
-    # Check if all lines are valid
     all_valid = all(result['valid'] for result in results)
 
     return jsonify({
