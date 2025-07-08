@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, render_template, abort
 from flask_cors import CORS
 from src.parsing.propositional_parser import parse_string
 from src.core.proof import Proof, Sequent, InferenceRule
+from src.core.fitch_style import FitchSubProof
 from src.core.sentence import Gamma
 from src.core.errors import ParseError
 import traceback
@@ -14,41 +15,14 @@ CORS(app)
 def index():
     return render_template('index.html')
 
-def line2sequent(line):
-    """
-    Parse the line format: "[assumption_1, assumption_2, ...] |- conclusion :RULE"
-    """
-    if '|-' not in line:
-        raise ParseError('Invalid format. Missing a turnstile |- separator.' \
-                         'Expected format: [assumption_1, assumption_2, ...] |- conclusion :RULE')
-
-    parts = line.split('|-')
-    if len(parts) != 2:
-        raise ParseError('Invalid format. Expected single turnstile |- separator.' \
-                         'Expected format: [assumption_1, assumption_2, ...] |- conclusion :RULE')
-
-    assumptions_str = parts[0].strip()
-    conclusion_rule = parts[1].strip()
-
-    if ':' not in conclusion_rule:
+def line2conclusion(line):
+    if ':' not in line:
         raise ParseError('Invalid format. Missing inference rule.' \
                          'Expected format: [assumption_1, assumption_2, ...] |- conclusion :RULE')
 
-    conclusion_str, rule_str = conclusion_rule.rsplit(':', 1)
+    conclusion_str, rule_str = line.rsplit(':', 1)
     conclusion_str = conclusion_str.strip()
     rule_str = rule_str.strip()
-
-    assumptions_str = assumptions_str.strip('[]')
-    assumptions_str = assumptions_str.strip()
-
-    # Parse assumptions
-    if assumptions_str == '':
-        gamma = Gamma()
-    else:
-        # Split by comma
-        assumption_strs = [s.strip() for s in assumptions_str.split(',') if s.strip()]
-        assumptions = [parse_string(s) for s in assumption_strs]
-        gamma = Gamma(assumptions)
 
     # Parse conclusion
     conclusion = parse_string(conclusion_str)
@@ -73,7 +47,39 @@ def line2sequent(line):
     if rule_str not in rule_map:
         raise ParseError(f'{rule_str} is not one of the valid rules of inference!')
 
-    return Sequent(gamma, conclusion, rule_map[rule_str])
+    return conclusion, rule_map[rule_str]
+
+def line2sequent(line):
+    """
+    Parse the line format: "[assumption_1, assumption_2, ...] |- conclusion :RULE"
+    """
+    if '|-' not in line:
+        raise ParseError('Invalid format. Missing a turnstile |- separator.' \
+                         'Expected format: [assumption_1, assumption_2, ...] |- conclusion :RULE')
+
+    parts = line.split('|-')
+    if len(parts) != 2:
+        raise ParseError('Invalid format. Expected single turnstile |- separator.' \
+                         'Expected format: [assumption_1, assumption_2, ...] |- conclusion :RULE')
+
+    assumptions_str = parts[0].strip()
+    conclusion_rule = parts[1].strip()
+
+    assumptions_str = assumptions_str.strip('[]')
+    assumptions_str = assumptions_str.strip()
+
+    # Parse assumptions
+    if assumptions_str == '':
+        gamma = Gamma()
+    else:
+        # Split by comma
+        assumption_strs = [s.strip() for s in assumptions_str.split(',') if s.strip()]
+        assumptions = [parse_string(s) for s in assumption_strs]
+        gamma = Gamma(assumptions)
+
+    conclusion, rule = line2conclusion(conclusion_rule)
+
+    return Sequent(gamma, conclusion, rule)
 
 @app.route('/check-proof', methods=['POST'])
 def check_proof():

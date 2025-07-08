@@ -69,7 +69,7 @@ class Proof:
             return False
 
         elif potential.rule == InferenceRule.and_intro:
-            if not isinstance(potential.conlcusion, TwoSided) or potential.conclusion.oper != Operator.AND:
+            if not isinstance(potential.conclusion, TwoSided) or potential.conclusion.oper != Operator.AND:
                 return False
             if self.proof_exists(potential.gamma, potential.conclusion.left) and self.proof_exists(potential.gamma, potential.conclusion.right):
                 return True
