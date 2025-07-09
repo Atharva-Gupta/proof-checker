@@ -132,6 +132,7 @@ def check_proof():
         'total_lines': len(results)
     })
 
+@app.route('/check-fitch-proof', methods=['POST'])
 def create_fitch_style_proof():
     try:
         data = request.json

@@ -36,20 +36,38 @@
 
         <div class="help-section">
             <h5>How to use:</h5>
-            <p><strong>Format:</strong> <code>[assumptions] |- conclusion :RULE</code></p>
-            <p><strong>Examples:</strong></p>
-            <ul class="mb-0">
-                <li><code>[p, q] |- (p AND q) :AI</code> - And Introduction</li>
-                <li><code>[p] |- p :AX</code> - Axiom</li>
-                <li><code>[(p AND q)] |- p :AE</code> - And Elimination</li>
-            </ul>
+            <div class="mb-3">
+                <strong>Sequent Style Format:</strong> <code>[assumptions] |- conclusion :RULE</code>
+                <ul class="mt-2 mb-0">
+                    <li><code>[p, q] |- (p \and q) :AI</code> - And Introduction</li>
+                    <li><code>[p] |- p :AX</code> - Axiom</li>
+                    <li><code>[(p \and q)] |- p :AE</code> - And Elimination</li>
+                </ul>
+            </div>
+            <div class="mb-3">
+                <strong>Fitch Style Format:</strong> Use indentation for sub-proofs, <code>--</code> to close sub-proofs
+                <ul class="mt-2 mb-0">
+                    <li><code>p :AX</code> - Assumption</li>
+                    <li><code>q :AX</code> - Assumption</li>
+                    <li><code>  (p \and q) :AI</code> - Conclusion in sub-proof</li>
+                    <li><code>--</code> - Close sub-proof</li>
+                </ul>
+            </div>
             <p><strong>Syntax:</strong> Use <code>\and</code>, <code>\or</code>, <code>\implies</code>, <code>\not</code>, <code>\true</code>, <code>\false</code></p>
             <p><strong>Rules:</strong> AX, AI, AE, OI, OE, II, IE, NI, NE, TI, FE, EX, IP</p>
         </div>
 
         <div class="row">
             <div class="col-md-6">
-                <h3>Enter Your Proof:</h3>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3>Enter Your Proof:</h3>
+                    <div class="btn-group" role="group" aria-label="Proof Style">
+                        <input type="radio" class="btn-check" name="proof-style" id="sequent-style" value="sequent" checked>
+                        <label class="btn btn-outline-primary" for="sequent-style">Sequent Style</label>
+                        <input type="radio" class="btn-check" name="proof-style" id="fitch-style" value="fitch">
+                        <label class="btn btn-outline-primary" for="fitch-style">Fitch Style</label>
+                    </div>
+                </div>
                 <textarea id="proof-input" class="form-control proof-editor" rows="15" placeholder="Enter your proof here, one line per sequent...
 
 Example:
@@ -120,6 +138,7 @@ Example:
         function checkProof() {
             const proofText = document.getElementById('proof-input').value;
             const resultsDiv = document.getElementById('results');
+            const proofStyle = document.querySelector('input[name="proof-style"]:checked').value;
 
             if (!proofText.trim()) {
                 resultsDiv.innerHTML = '<p class="text-muted">Enter a proof to see results here.</p>';
@@ -130,7 +149,9 @@ Example:
 
             resultsDiv.innerHTML = '<p class="text-info">Checking proof...</p>';
 
-            fetch('/check-proof', {
+            const endpoint = proofStyle === 'fitch' ? '/check-fitch-proof' : '/check-proof';
+
+            fetch(endpoint, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -156,6 +177,39 @@ Example:
                 autoCheckTimeout = setTimeout(checkProof, 500);
             }
         });
+
+        // Add event listeners for proof style radio buttons
+        document.querySelectorAll('input[name="proof-style"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                updatePlaceholderText();
+                if (document.getElementById('auto-check').checked) {
+                    clearTimeout(autoCheckTimeout);
+                    autoCheckTimeout = setTimeout(checkProof, 500);
+                }
+            });
+        });
+
+        function updatePlaceholderText() {
+            const proofStyle = document.querySelector('input[name="proof-style"]:checked').value;
+            const textarea = document.getElementById('proof-input');
+            
+            if (proofStyle === 'fitch') {
+                textarea.placeholder = `Enter your Fitch-style proof here...
+
+Example:
+p :AX
+q :AX
+  (p \and q) :AI
+--
+(p \and q) :AE`;
+            } else {
+                textarea.placeholder = `Enter your proof here, one line per sequent...
+
+Example:
+[p, q] |- (p \and q) :AI
+[(p \and q)] |- p :AE`;
+            }
+        }
 
         document.getElementById('clear-proof').addEventListener('click', function() {
             document.getElementById('proof-input').value = '';
