@@ -132,28 +132,25 @@ def check_proof():
         'total_lines': len(results)
     })
 
-def create_fitch_style_proof(proof_lines):
-    # we will add the below thing back once this function is actually working
-
-    # try:
-    #     data = request.json
-    #     proof_lines = data.get('proof', '').strip().split('\n')
-    # except Exception as e:
-    #     return jsonify({
-    #         'valid': False,
-    #         'error': f'Server error: {str(e)}',
-    #         'traceback': traceback.format_exc()
-    #     }), 500
+def create_fitch_style_proof():
+    try:
+        data = request.json
+        proof_lines = data.get('proof', '').strip().split('\n')
+    except Exception as e:
+        return jsonify({
+            'valid': False,
+            'error': f'Server error: {str(e)}',
+            'traceback': traceback.format_exc()
+        }), 500
 
     fs = FitchSubProof()
     results = []
     space_count = 0
 
-    print(proof_lines)
-
     for i, line in enumerate(proof_lines):
         if line == "--":
             fs = fs.outer_proof
+            space_count -= 1
             continue
 
         line = line.rstrip()
@@ -168,6 +165,8 @@ def create_fitch_style_proof(proof_lines):
             fs = fs.outer_proof
         elif ind > space_count:
             fs = fs.add_subproof()
+
+        space_count = ind
 
         try:
             conclusion, rule = line2conclusion(line[ind:])
@@ -197,35 +196,13 @@ def create_fitch_style_proof(proof_lines):
                 'error': f'Invalid inference for rule {rule}'
             })
 
-        print(fs.pr)
-
     all_valid = all(result['valid'] for result in results)
 
-    # return jsonify({
-    #     'valid': all_valid,
-    #     'results': results,
-    #     'total_lines': len(results)
-    # })
-
-    return [result['valid'] for result in results]
+    return jsonify({
+        'valid': all_valid,
+        'results': results,
+        'total_lines': len(results)
+    })
 
 if __name__ == '__main__':
-    # test = ['\\not(A \\or (\\not A)) :AX', '  A :AX', '  A \\or (\\not A) :OI', '  \\not(A \\or (\\not A)) :EX', '  \\false :NE', ' \\not A :NI']
-    s1 = 'A \implies C :AX'
-    s2 = 'B \implies C :AX'
-    s3 = 'A \or B :AX'
-
-    s4 = ' A :AX'
-    s5 = ' C :IE'
-
-    s_bet = '--'
-
-    s6 = ' B :AX'
-    s7 = ' C :IE'
-
-    s8 = 'C :OE'
-
-    test = [s1, s2, s3, s4, s5, s_bet, s6, s7, s8]
-    print(create_fitch_style_proof(test))
-
-    # app.run(debug=True)
+    app.run(debug=True)
