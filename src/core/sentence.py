@@ -5,10 +5,31 @@ from copy import deepcopy
 from .errors import VariableNotAssignedError
 
 class Sentence(ABC):
+    """Abstract base class for logical sentences in propositional logic.
+    
+    Generated automatically by Claude.
+    """
     def evaluate(self, variable_assignment: dict) -> bool:
+        """Evaluate the sentence under the given variable assignment.
+        
+        Args:
+            variable_assignment: Dict mapping variable names to boolean values
+            
+        Returns:
+            Boolean value of the sentence under the assignment
+            
+        Generated automatically by Claude.
+        """
         raise NotImplementedError()
 
     def get_atomics(self) -> Iterable:
+        """Get all atomic variables that appear in this sentence.
+        
+        Returns:
+            Set of atomic variable names
+            
+        Generated automatically by Claude.
+        """
         raise NotImplementedError()
 
     def __str__(self):
@@ -24,8 +45,19 @@ class Operator(Enum):
     NOT = "NOT"
 
 class Atomic(Sentence):
+    """Atomic propositional variable.
+    
+    Generated automatically by Claude.
+    """
     name: str
     def __init__(self, name: str):
+        """Initialize an atomic sentence.
+        
+        Args:
+            name: The name of the propositional variable
+            
+        Generated automatically by Claude.
+        """
         self.name = name
 
     def evaluate(self, variable_assignment: dict) -> bool:
@@ -49,6 +81,10 @@ class Atomic(Sentence):
 
 
 class True_Sym(Atomic):
+    """Special atomic sentence representing logical truth.
+    
+    Generated automatically by Claude.
+    """
     def __init__(self):
         super().__init__("TRUE")
 
@@ -60,6 +96,10 @@ class True_Sym(Atomic):
 
 
 class False_Sym(Atomic):
+    """Special atomic sentence representing logical falsity.
+    
+    Generated automatically by Claude.
+    """
     def __init__(self):
         super().__init__("FALSE")
 
@@ -71,8 +111,19 @@ class False_Sym(Atomic):
 
 
 class Negation(Sentence):
+    """Negation of a sentence.
+    
+    Generated automatically by Claude.
+    """
     inner: Sentence
     def __init__(self, inner):
+        """Initialize a negation.
+        
+        Args:
+            inner: The sentence to negate
+            
+        Generated automatically by Claude.
+        """
         super().__init__()
         self.inner = inner
 
@@ -91,10 +142,23 @@ class Negation(Sentence):
         return f"({Operator.NOT.value} {self.inner})"
 
 class TwoSided(Sentence):
+    """Binary connective sentence (AND, OR, IMPLIES).
+    
+    Generated automatically by Claude.
+    """
     left: Sentence
     right: Sentence
     oper: Operator
     def __init__(self, left, right, oper):
+        """Initialize a binary connective sentence.
+        
+        Args:
+            left: Left operand sentence
+            right: Right operand sentence
+            oper: Operator (AND, OR, or IMPLIES)
+            
+        Generated automatically by Claude.
+        """
         super().__init__()
         self.oper = oper
         self.left = left
@@ -127,8 +191,19 @@ class TwoSided(Sentence):
 
 
 class Gamma(MutableSequence):
+    """Collection of sentences representing assumptions or premises.
+    
+    Generated automatically by Claude.
+    """
     _items: List[Sentence]
     def __init__(self, *args):
+        """Initialize a gamma collection.
+        
+        Args:
+            *args: Can be empty, a single sentence, a list/tuple of sentences, or multiple sentences
+            
+        Generated automatically by Claude.
+        """
         if len(args) == 0:
             self._items = []
         elif len(args) == 1:
@@ -171,6 +246,16 @@ class Gamma(MutableSequence):
         return True
 
     def is_subset_of(self, other):
+        """Check if this gamma is a subset of another gamma.
+        
+        Args:
+            other: Another gamma to compare against
+            
+        Returns:
+            True if all sentences in this gamma are in the other gamma
+            
+        Generated automatically by Claude.
+        """
         for sentence in self._items:
             if sentence not in other:
                 return False

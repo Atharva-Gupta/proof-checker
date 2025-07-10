@@ -22,10 +22,23 @@ class InferenceRule(Enum):
 
 
 class Sequent:
+    """A sequent representing a logical inference step.
+    
+    Generated automatically by Claude.
+    """
     gamma: Gamma
     conclusion: Sentence
     rule: InferenceRule
     def __init__(self, gamma: Gamma, conclusion: Sentence, rule: InferenceRule):
+        """Initialize a sequent.
+        
+        Args:
+            gamma: Collection of assumptions
+            conclusion: The conclusion sentence
+            rule: The inference rule used
+            
+        Generated automatically by Claude.
+        """
         self.gamma = gamma
         self.conclusion = conclusion
         self.rule = rule
@@ -43,11 +56,30 @@ class Sequent:
 
 
 class Proof:
+    """A proof in sequent calculus style.
+    
+    Generated automatically by Claude.
+    """
     sequents: List[Sequent]
     def __init__(self):
+        """Initialize an empty proof.
+        
+        Generated automatically by Claude.
+        """
         self.sequents = []
 
     def proof_exists(self, gamma, conclusion):
+        """Check if a proof exists for the given gamma and conclusion.
+        
+        Args:
+            gamma: Collection of assumptions
+            conclusion: The conclusion to prove
+            
+        Returns:
+            True if a proof exists in this proof object
+            
+        Generated automatically by Claude.
+        """
         for sequent in self.sequents:
             if gamma == sequent.gamma and sequent.conclusion == conclusion:
                 return True
@@ -55,6 +87,16 @@ class Proof:
         return False
 
     def add_sequent(self, sequent: Sequent) -> bool:
+        """Add a sequent to the proof if it's valid.
+        
+        Args:
+            sequent: The sequent to add
+            
+        Returns:
+            True if the sequent was added successfully
+            
+        Generated automatically by Claude.
+        """
         if self.check_sequent(sequent):
             self.sequents.append(sequent)
             return True
@@ -62,6 +104,16 @@ class Proof:
             return False
 
     def check_sequent(self, potential: Sequent):
+        """Check if a sequent is valid according to the inference rules.
+        
+        Args:
+            potential: The sequent to validate
+            
+        Returns:
+            True if the sequent is valid
+            
+        Generated automatically by Claude.
+        """
         if potential.rule == InferenceRule.axiom:
             for sentence in potential.gamma:
                 if sentence == potential.conclusion:

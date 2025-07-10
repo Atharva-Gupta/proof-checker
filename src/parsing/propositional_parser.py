@@ -11,6 +11,16 @@ def insert_spaces(expression):
     return [part for part in re.split(r'(\(|\)|\s+)', expression) if part and not re.match(r'^\s+$', part)]
 
 def parse_atomic(atomic_expr):
+    """Parse an atomic expression into a Sentence object.
+    
+    Args:
+        atomic_expr: String representation of atomic expression
+        
+    Returns:
+        Atomic sentence object
+        
+    Generated automatically by Claude.
+    """
     if atomic_expr == r"\true":
         return True_Sym()
     elif atomic_expr == r"\false":
@@ -21,12 +31,32 @@ def parse_atomic(atomic_expr):
         return Atomic(atomic_expr)
 
 def parse_single(s):
+    """Parse a single element (string or sentence object).
+    
+    Args:
+        s: String or Sentence object
+        
+    Returns:
+        Sentence object
+        
+    Generated automatically by Claude.
+    """
     if isinstance(s, str):
         return parse_atomic(s)
     else:
         return s
 
 def balanced_parentheses(expression):
+    """Check if parentheses are balanced in the expression.
+    
+    Args:
+        expression: List of tokens to check
+        
+    Returns:
+        True if parentheses are balanced
+        
+    Generated automatically by Claude.
+    """
     count = 0
     for char in expression:
         if char == "(":
@@ -40,6 +70,16 @@ def balanced_parentheses(expression):
     return count == 0
 
 def parse_string(s):
+    """Parse a string into a logical sentence.
+    
+    Args:
+        s: String representation of logical formula
+        
+    Returns:
+        Sentence object representing the parsed formula
+        
+    Generated automatically by Claude.
+    """
     s = "(" + s + ")"
     s = insert_spaces(s)
 

@@ -13,6 +13,10 @@ CORS(app)
 
 @app.route('/')
 def index():
+    """Serve the main index page.
+    
+    Generated automatically by Claude.
+    """
     return render_template('index.html')
 
 def line2conclusion(line):
@@ -52,6 +56,16 @@ def line2conclusion(line):
     return conclusion, rule_map[rule_str]
 
 def line2sequent(line):
+    """Parse a line into a sequent object.
+    
+    Args:
+        line: String in format "[assumptions] |- conclusion :RULE"
+        
+    Returns:
+        Sequent object
+        
+    Generated automatically by Claude.
+    """
     """
     Parse the line format: "[assumption_1, assumption_2, ...] |- conclusion :RULE"
     """
@@ -83,6 +97,13 @@ def line2sequent(line):
 
 @app.route('/check-sequent-proof', methods=['POST'])
 def check_sequent_proof():
+    """Check the validity of a sequent-style proof.
+    
+    Returns:
+        JSON response with validation results
+        
+    Generated automatically by Claude.
+    """
     try:
         data = request.json
         proof_lines = data.get('proof', '').strip().split('\n')
@@ -134,6 +155,13 @@ def check_sequent_proof():
 
 @app.route('/check-fitch-proof', methods=['POST'])
 def check_fitch_proof():
+    """Check the validity of a Fitch-style proof.
+    
+    Returns:
+        JSON response with validation results
+        
+    Generated automatically by Claude.
+    """
     try:
         data = request.json
         proof_lines = data.get('proof', '').strip().split('\n')
