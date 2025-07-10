@@ -158,7 +158,7 @@ class Proof:
             return False
 
         elif potential.rule == InferenceRule.implies_intro:
-            if not isinstance(potential.conclusion, TwoSided) and potential.conclusion.oper != Operator.IMPLIES:
+            if not isinstance(potential.conclusion, TwoSided) or potential.conclusion.oper != Operator.IMPLIES:
                 return False
             gamma_prime = potential.gamma + [potential.conclusion.left]
             if self.proof_exists(gamma_prime, potential.conclusion.right):
