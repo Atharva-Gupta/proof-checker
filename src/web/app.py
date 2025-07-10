@@ -81,8 +81,8 @@ def line2sequent(line):
 
     return Sequent(gamma, conclusion, rule)
 
-@app.route('/check-proof', methods=['POST'])
-def check_proof():
+@app.route('/check-sequent-proof', methods=['POST'])
+def check_sequent_proof():
     try:
         data = request.json
         proof_lines = data.get('proof', '').strip().split('\n')
@@ -133,7 +133,7 @@ def check_proof():
     })
 
 @app.route('/check-fitch-proof', methods=['POST'])
-def create_fitch_style_proof():
+def check_fitch_proof():
     try:
         data = request.json
         proof_lines = data.get('proof', '').strip().split('\n')

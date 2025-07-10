@@ -149,7 +149,7 @@ Example:
 
             resultsDiv.innerHTML = '<p class="text-info">Checking proof...</p>';
 
-            const endpoint = proofStyle === 'fitch' ? '/check-fitch-proof' : '/check-proof';
+            const endpoint = proofStyle === 'fitch' ? '/check-fitch-proof' : '/check-sequent-proof';
 
             fetch(endpoint, {
                 method: 'POST',
@@ -192,7 +192,7 @@ Example:
         function updatePlaceholderText() {
             const proofStyle = document.querySelector('input[name="proof-style"]:checked').value;
             const textarea = document.getElementById('proof-input');
-            
+
             if (proofStyle === 'fitch') {
                 textarea.placeholder = `Enter your Fitch-style proof here...
 
